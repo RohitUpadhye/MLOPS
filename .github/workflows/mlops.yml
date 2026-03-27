@@ -1,0 +1,32 @@
+name: MLOps Pipeline
+
+on:
+  push:
+    paths:
+      - 'data/data.csv'   # 🔥 Trigger only when data changes
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Train Model
+      run: python src/train.py
+
+    - name: Build Docker Image
+      run: docker build -t mlops-app .
+
+    - name: Run Container (Demo Purpose)
+      run: docker run -d -p 5000:5000 mlops-app
